@@ -209,7 +209,7 @@
   .person{text-align:center}
   .person .ph{width:100%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,var(--green-700),var(--green-900));position:relative;border:2px solid var(--sand-3);box-shadow:0 14px 30px -18px rgba(20,48,30,.6);transition:transform .3s var(--ease),border-color .3s}
   .person:hover .ph{transform:translateY(-5px);border-color:var(--gold)}
-  .person .ph img{width:100%;height:100%;object-fit:cover;object-position:top center}
+  .person .ph img{width:100%;height:100%;object-fit:cover;object-position:top center;position:relative;z-index:1}
   .person .ph .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--gold-soft)}
   .person .nm{font-family:"IBM Plex Sans Arabic","Manrope",sans-serif;direction:rtl;font-weight:600;font-size:.92rem;color:var(--green-900);margin-top:14px;line-height:1.4}
   .person .rl{font-family:"Manrope";font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-top:4px}
@@ -825,8 +825,6 @@
     {n:"عبدالرحيم علي",f:"Untitled-1qw24s.png"},
     {n:"محمود أحمد أبكر",f:"Untitled-1dfgsdgsdgsdgsdg.png"},
     {n:"محمد مهدي محمد أحمد",f:"Untitled-14345rsdgdgdfg.png"},
-    {n:"محمد إدريس جبارة",f:"Unt345345435itled-1.png"},
-    {n:"محمد جمعة",f:"HGJHGGGGGGGHH.png"},
     {n:"مجذوب العاقب",f:"Untitderrrreled-1.png"},
     {n:"محمد أحمد الخضر",f:"Untiaas3435435tled-1.png"},
     {n:"عرديب جاويش آدم",f:"Untitlqq23sdsdsed-1.png"},
@@ -834,14 +832,16 @@
     {n:"طه أحمد",f:"Untitljhhkjhhjhed-1.png"},
     {n:"عبدالقادر إبراهيم حسن",f:"Untitlooooooed-1.png"},
     {n:"مهندس أحمد عبد الغني",f:"we.png"},
-    {n:"سامي صالح عثمان",f:"Undddd.png"}
+    {n:"سامي صالح عثمان",f:"Undddd.png"},
+    {n:"محمد الطيب",f:""}
   ];
   var personIcon='<span class="fallback"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>';
   function personCard(p,isLead){
     var role=isLead?'<div class="rl">'+p.r+'</div>':'<div class="rl">Member</div>';
+    var src=p.f?(/^(https?:)?\/\//.test(p.f)?p.f:IMG+p.f):'';
+    var img=src?'<img src="'+src+'" alt="'+p.n+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
     return '<div class="person'+(isLead?' lead-card':'')+'">'
-      +'<div class="ph">'+personIcon+'<img src="'+IMG+p.f+'" alt="'+p.n+'" loading="lazy" '
-      +'onerror="this.style.display=\'none\'"></div>'
+      +'<div class="ph">'+personIcon+img+'</div>'
       +'<div class="nm" dir="rtl">'+p.n+'</div>'+role+'</div>';
   }
   function renderTeam(){
