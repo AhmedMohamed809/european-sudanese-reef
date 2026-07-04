@@ -210,7 +210,7 @@
   .person .ph{width:100%;aspect-ratio:1/1;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 30%,var(--green-700),var(--green-900));position:relative;border:2px solid var(--sand-3);box-shadow:0 14px 30px -18px rgba(20,48,30,.6);transition:transform .3s var(--ease),border-color .3s}
   .person:hover .ph{transform:translateY(-5px);border-color:var(--gold)}
   .person .ph img{width:100%;height:100%;object-fit:cover;object-position:top center;position:relative;z-index:1}
-  .person .ph .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--gold-soft)}
+  .person .ph .fallback{position:absolute;inset:0;display:grid;place-items:center;color:#f4eddd;font-family:"Manrope",sans-serif;font-weight:700;font-size:2.4rem;line-height:1;text-transform:uppercase}
   .person .nm{font-family:"IBM Plex Sans Arabic","Manrope",sans-serif;direction:rtl;font-weight:600;font-size:.92rem;color:var(--green-900);margin-top:14px;line-height:1.4}
   .person .rl{font-family:"Manrope";font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-top:4px}
   .person.lead-card .ph{border-color:var(--gold)}
@@ -835,13 +835,27 @@
     {n:"سامي صالح عثمان",f:"Undddd.png"},
     {n:"محمد الطيب",f:""}
   ];
-  var personIcon='<span class="fallback"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>';
+  // Fallback avatar: deterministic earthy color + the member's leading initial
+  // (honorific titles like د. / بروف / المحامي are skipped). Shown only when a
+  // real photo is missing or fails to load — the img (z-index:1) covers it otherwise.
+  var avatarPalette=['#5f7d52','#b9933f','#8a6a3c','#6d8b6a','#a06d47','#4f6b57','#94743e','#617a6e'];
+  var avatarTitles={'د':1,'بروف':1,'المحامي':1,'المرحوم':1,'مهندس':1,'أ':1,'م':1,'الدكتور':1};
+  function avatarColor(name){
+    var h=0;for(var i=0;i<name.length;i++){h=(h*31+name.charCodeAt(i))>>>0;}
+    return avatarPalette[h%avatarPalette.length];
+  }
+  function avatarInitial(name){
+    var parts=name.replace(/[.\/]/g,' ').split(/\s+/).filter(function(w){return w&&!avatarTitles[w];});
+    var w=parts[0]||name.trim();
+    return w.charAt(0);
+  }
   function personCard(p,isLead){
     var role=isLead?'<div class="rl">'+p.r+'</div>':'<div class="rl">Member</div>';
     var src=p.f?(/^(https?:)?\/\//.test(p.f)?p.f:IMG+p.f):'';
     var img=src?'<img src="'+src+'" alt="'+p.n+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
+    var fallback='<span class="fallback" style="background:'+avatarColor(p.n)+'">'+avatarInitial(p.n)+'</span>';
     return '<div class="person'+(isLead?' lead-card':'')+'">'
-      +'<div class="ph">'+personIcon+img+'</div>'
+      +'<div class="ph">'+fallback+img+'</div>'
       +'<div class="nm" dir="rtl">'+p.n+'</div>'+role+'</div>';
   }
   function renderTeam(){
