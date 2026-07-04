@@ -832,14 +832,16 @@
     {n:"طه أحمد",f:"Untitljhhkjhhjhed-1.png"},
     {n:"عبدالقادر إبراهيم حسن",f:"Untitlooooooed-1.png"},
     {n:"مهندس أحمد عبد الغني",f:"we.png"},
-    {n:"سامي صالح عثمان",f:"Undddd.png"}
+    {n:"سامي صالح عثمان",f:"Undddd.png"},
+    {n:"محمد الطيب",f:""}
   ];
   var personIcon='<span class="fallback"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span>';
   function personCard(p,isLead){
     var role=isLead?'<div class="rl">'+p.r+'</div>':'<div class="rl">Member</div>';
+    var src=p.f?(/^(https?:)?\/\//.test(p.f)?p.f:IMG+p.f):'';
+    var img=src?'<img src="'+src+'" alt="'+p.n+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
     return '<div class="person'+(isLead?' lead-card':'')+'">'
-      +'<div class="ph">'+personIcon+'<img src="'+IMG+p.f+'" alt="'+p.n+'" loading="lazy" '
-      +'onerror="this.style.display=\'none\'"></div>'
+      +'<div class="ph">'+personIcon+img+'</div>'
       +'<div class="nm" dir="rtl">'+p.n+'</div>'+role+'</div>';
   }
   function renderTeam(){
