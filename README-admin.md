@@ -22,22 +22,29 @@ The dashboard needs two secrets configured in Vercel. Until they're set, the
 ### 2. Add the secrets to Vercel
 
 In the Vercel project (**european-sudanese-reef**) → **Settings → Environment
-Variables**, add two variables (Production, Preview, Development):
+Variables**, add these (Production, Preview, Development):
 
 | Name             | Value                                             |
 | ---------------- | ------------------------------------------------- |
-| `GITHUB_TOKEN`   | the fine-grained token from step 1                |
+| `ADMIN_EMAIL`    | the email the admin logs in with                  |
 | `ADMIN_PASSWORD` | a strong password you choose for logging in       |
+| `GITHUB_TOKEN`   | the fine-grained token from step 1                |
 
 Then **redeploy** (Deployments → ⋯ → Redeploy) so the new variables take effect.
+
+**Login vs. saving:** logging in only needs `ADMIN_EMAIL` + `ADMIN_PASSWORD`.
+Actually *saving* members (add/remove) also needs `GITHUB_TOKEN`. If you log in
+before setting the token, the dashboard says so instead of breaking.
+`ADMIN_EMAIL` is optional — if you leave it out, any email works as long as the
+password matches.
 
 > Optional overrides (defaults shown): `GH_OWNER=AhmedMohamed809`,
 > `GH_REPO=european-sudanese-reef`, `GH_BRANCH=main`.
 
 ## Using it
 
-1. Go to **`https://<your-site>/admin`**.
-2. Log in with `ADMIN_PASSWORD`.
+1. Go to **`https://<your-site>/admin`** — or click **"Admin login"** in the site footer.
+2. Log in with your `ADMIN_EMAIL` + `ADMIN_PASSWORD`.
 3. **Add a member:** type the name, an optional title (defaults to "Member"),
    pick a photo (it's automatically resized before upload), then **إضافة العضو**.
 4. **Remove a member:** press **حذف** next to them.
@@ -46,6 +53,7 @@ Then **redeploy** (Deployments → ⋯ → Redeploy) so the new variables take e
 ## How it works
 
 - `admin.html` — the dashboard UI (login + add/remove). No secrets live here.
+- `api/login.js` — validates the admin email + password (no GitHub token needed).
 - `api/add-member.js`, `api/delete-member.js`, `api/members.js` — Vercel
   serverless functions. They validate the password server-side and use the
   GitHub token (server-side only, never sent to the browser) to commit changes.

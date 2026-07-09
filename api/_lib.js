@@ -7,20 +7,33 @@ const REPO   = process.env.GH_REPO   || 'european-sudanese-reef';
 const BRANCH = process.env.GH_BRANCH || 'main';
 const TOKEN  = process.env.GITHUB_TOKEN;
 const PASSWORD = process.env.ADMIN_PASSWORD;
+const EMAIL  = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
 
 const MEMBERS_PATH = 'members.json';
 const IMG_DIR = 'assets/img';
 const ALLOWED_EXT = { jpg: 'jpg', jpeg: 'jpg', png: 'png', webp: 'webp' };
 
-// Constant-time password check against ADMIN_PASSWORD.
+// Constant-time equality that doesn't leak length via early return.
+function safeEqual(a, b) {
+  const ha = crypto.createHash('sha256').update(String(a)).digest();
+  const hb = crypto.createHash('sha256').update(String(b)).digest();
+  return crypto.timingSafeEqual(ha, hb);
+}
+
+// The session credential (Bearer) is the admin password.
 function isAuthed(req) {
   if (!PASSWORD) return false;
   const hdr = req.headers['authorization'] || '';
   const provided = hdr.startsWith('Bearer ') ? hdr.slice(7) : '';
-  const a = Buffer.from(String(provided));
-  const b = Buffer.from(String(PASSWORD));
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
+  return safeEqual(provided, PASSWORD);
+}
+
+// Email + password login check. Email is only enforced if ADMIN_EMAIL is set.
+function checkLogin(email, password) {
+  if (!PASSWORD) return false;
+  if (!safeEqual(password, PASSWORD)) return false;
+  if (EMAIL && (email || '').trim().toLowerCase() !== EMAIL) return false;
+  return true;
 }
 
 function requireEnv() {
@@ -123,6 +136,6 @@ function safeMemberFile(name) {
 }
 
 module.exports = {
-  OWNER, REPO, BRANCH, MEMBERS_PATH, IMG_DIR, ALLOWED_EXT,
-  isAuthed, requireEnv, gh, readMembers, commitFiles, makeImageName, safeMemberFile,
+  OWNER, REPO, BRANCH, MEMBERS_PATH, IMG_DIR, ALLOWED_EXT, EMAIL,
+  isAuthed, checkLogin, requireEnv, gh, readMembers, commitFiles, makeImageName, safeMemberFile,
 };

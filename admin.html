@@ -75,6 +75,8 @@
   <section id="loginCard" class="card">
     <h2>تسجيل الدخول</h2>
     <form id="loginForm">
+      <label for="email">البريد الإلكتروني <span style="color:var(--ink-soft)">Email</span></label>
+      <input id="email" type="email" autocomplete="username" required>
       <label for="pw">كلمة المرور <span style="color:var(--ink-soft)">Password</span></label>
       <input id="pw" type="password" autocomplete="current-password" required>
       <div style="margin-top:14px"><button class="btn" type="submit">دخول</button></div>
@@ -122,7 +124,7 @@
 
 <script>
 (function(){
-  var PW_KEY='esr_admin_pw';
+  var PW_KEY='esr_admin_pw', EMAIL_KEY='esr_admin_email';
   var pw='';
   var $=function(id){return document.getElementById(id);};
 
@@ -140,19 +142,33 @@
 
   // ---- login ----
   function enterApp(){hide($('loginCard'));show($('app'));show($('logoutBtn'));loadList();}
-  function logout(){pw='';try{sessionStorage.removeItem(PW_KEY);}catch(e){}show($('loginCard'));hide($('app'));hide($('logoutBtn'));$('pw').value='';}
+  function logout(){pw='';try{sessionStorage.removeItem(PW_KEY);sessionStorage.removeItem(EMAIL_KEY);}catch(e){}
+    show($('loginCard'));hide($('app'));hide($('logoutBtn'));$('pw').value='';}
+
+  function doLogin(email,password,onDone){
+    fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,password:password})}).then(function(r){
+      return r.json().catch(function(){return{error:'HTTP '+r.status};}).then(function(j){onDone(r.status,j);});
+    }).catch(function(){onDone(0,{error:'network'});});
+  }
 
   $('loginForm').addEventListener('submit',function(e){
     e.preventDefault();
-    pw=$('pw').value;
+    var email=$('email').value.trim(), password=$('pw').value;
     setMsg($('loginMsg'),'جارٍ التحقق… <span class="spin"></span>','info');
-    fetch('/api/members',{headers:authHeaders()}).then(function(r){
-      if(r.status===401){setMsg($('loginMsg'),'كلمة المرور غير صحيحة · Wrong password','err');pw='';return;}
-      if(!r.ok){return r.json().catch(function(){return{};}).then(function(j){
-        setMsg($('loginMsg'),'خطأ في الخادم · '+esc(j.error||('HTTP '+r.status))+(j.missing?(' ('+j.missing.join(', ')+')'):''),'err');pw='';});}
-      try{sessionStorage.setItem(PW_KEY,pw);}catch(e){}
-      setMsg($('loginMsg'),'');enterApp();
-    }).catch(function(){setMsg($('loginMsg'),'تعذّر الاتصال بالخادم · Network error','err');pw='';});
+    doLogin(email,password,function(status,j){
+      if(status===200&&j.ok){
+        pw=password;
+        try{sessionStorage.setItem(PW_KEY,pw);sessionStorage.setItem(EMAIL_KEY,email);}catch(e){}
+        setMsg($('loginMsg'),'');enterApp();
+      } else if(status===401){
+        setMsg($('loginMsg'),'البريد أو كلمة المرور غير صحيحة · Wrong email or password','err');
+      } else if(status===500){
+        setMsg($('loginMsg'),'الخادم غير مهيأ · Server not configured'+(j.missing?(' ('+j.missing.join(', ')+')'):''),'err');
+      } else {
+        setMsg($('loginMsg'),'تعذّر الاتصال بالخادم · Network error','err');
+      }
+    });
   });
   $('logoutBtn').addEventListener('click',logout);
 
@@ -160,12 +176,15 @@
   function loadList(){
     setMsg($('listMsg'),'جارٍ التحميل… <span class="spin"></span>','info');
     fetch('/api/members',{headers:authHeaders(),cache:'no-store'}).then(function(r){
-      if(r.status===401){logout();return null;}
-      return r.ok?r.json():null;
-    }).then(function(data){
-      if(!data){setMsg($('listMsg'),'تعذّر تحميل القائمة','err');return;}
-      setMsg($('listMsg'),'');
-      renderList(data.members||[]);
+      if(r.status===401){logout();return;}
+      return r.json().catch(function(){return null;}).then(function(j){
+        if(r.ok&&j){setMsg($('listMsg'),'');renderList(j.members||[]);return;}
+        if(r.status===500&&j&&j.missing){
+          setMsg($('listMsg'),'تم تسجيل الدخول ✓ — لحفظ/عرض الأعضاء اضبط '+esc(j.missing.join(', '))+' في Vercel.<br>Logged in — to list/save members, set '+esc(j.missing.join(', '))+' in Vercel.','info');
+        } else {
+          setMsg($('listMsg'),'تعذّر تحميل القائمة'+(j&&j.error?(' — '+esc(j.error)):''),'err');
+        }
+      });
     }).catch(function(){setMsg($('listMsg'),'تعذّر تحميل القائمة','err');});
   }
 
@@ -255,10 +274,12 @@
   });
 
   // ---- restore session ----
-  try{var saved=sessionStorage.getItem(PW_KEY);}catch(e){}
-  if(saved){pw=saved;fetch('/api/members',{headers:authHeaders()}).then(function(r){
-    if(r.ok)enterApp();else logout();
-  }).catch(function(){/* stay on login */});}
+  var savedPw='',savedEmail='';
+  try{savedPw=sessionStorage.getItem(PW_KEY)||'';savedEmail=sessionStorage.getItem(EMAIL_KEY)||'';}catch(e){}
+  if(savedPw){doLogin(savedEmail,savedPw,function(status,j){
+    if(status===200&&j&&j.ok){pw=savedPw;enterApp();}
+    else{try{sessionStorage.removeItem(PW_KEY);sessionStorage.removeItem(EMAIL_KEY);}catch(e){}}
+  });}
 })();
 </script>
 </body>
