@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>لوحة تحكم الأعضاء — European Sudanese Reef</title>
+<style>
+  :root{
+    --sand:#ece5d3; --sand-2:#f4eddd; --card:#ffffff; --line:#ddd2b8;
+    --green-900:#14301e; --green-800:#234d31; --green-700:#356140;
+    --gold:#b9933f; --gold-soft:#d8b968; --ink:#2c2c26; --ink-soft:#6b6656;
+    --danger:#a53c2f;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--sand);color:var(--ink);
+    font-family:"Segoe UI","IBM Plex Sans Arabic",Tahoma,Arial,sans-serif;line-height:1.5}
+  a{color:var(--green-800)}
+  .wrap{max-width:760px;margin:0 auto;padding:24px 18px 60px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px}
+  header.top h1{font-size:1.35rem;color:var(--green-900);margin:0}
+  header.top .sub{font-size:.8rem;color:var(--ink-soft)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px;margin-bottom:20px;
+    box-shadow:0 18px 40px -30px rgba(20,48,30,.5)}
+  h2{font-size:1.05rem;color:var(--green-800);margin:0 0 14px}
+  label{display:block;font-size:.82rem;font-weight:600;color:var(--ink-soft);margin:12px 0 5px}
+  input[type=text],input[type=password]{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;
+    font:inherit;background:#fff;color:var(--ink)}
+  input:focus{outline:none;border-color:var(--gold)}
+  .btn{appearance:none;border:0;border-radius:10px;padding:11px 20px;font:inherit;font-weight:700;cursor:pointer;
+    background:var(--green-800);color:#f4eddd;transition:.2s}
+  .btn:hover{background:var(--green-900)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn.ghost{background:transparent;color:var(--green-800);border:1px solid var(--line)}
+  .btn.danger{background:transparent;color:var(--danger);border:1px solid #e3c3bd;padding:7px 12px;font-size:.82rem}
+  .btn.danger:hover{background:var(--danger);color:#fff}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  .row>div{flex:1;min-width:200px}
+  .hidden{display:none!important}
+  .msg{padding:10px 14px;border-radius:10px;font-size:.9rem;margin-top:12px}
+  .msg.ok{background:#e7f0e5;color:#274d2e;border:1px solid #bcd6bb}
+  .msg.err{background:#f6e4e0;color:#8a3123;border:1px solid #e3c3bd}
+  .msg.info{background:#f3ecda;color:#6b5a2a;border:1px solid #e0d3a9}
+  .preview{width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:top center;
+    border:2px solid var(--line);background:#eee;margin-top:10px}
+  .list{list-style:none;margin:0;padding:0}
+  .item{display:flex;align-items:center;gap:14px;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .avatar{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:top center;flex:0 0 auto;
+    background:radial-gradient(circle at 50% 30%,var(--green-700),var(--green-900));display:grid;place-items:center;
+    color:#f4eddd;font-weight:700;overflow:hidden}
+  .avatar img{width:100%;height:100%;object-fit:cover;object-position:top center}
+  .item .meta{flex:1;min-width:0}
+  .item .meta b{display:block;color:var(--green-900)}
+  .item .meta span{font-size:.8rem;color:var(--ink-soft)}
+  .count{font-size:.82rem;color:var(--ink-soft);margin-bottom:10px}
+  .foot{font-size:.78rem;color:var(--ink-soft);text-align:center;margin-top:26px}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid #ffffff80;border-top-color:#fff;border-radius:50%;
+    animation:sp .7s linear infinite;vertical-align:-2px;margin-inline-start:8px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>لوحة تحكم الأعضاء</h1>
+      <div class="sub">Members admin · European Sudanese Reef</div>
+    </div>
+    <button id="logoutBtn" class="btn ghost hidden" type="button">خروج</button>
+  </header>
+
+  <!-- LOGIN -->
+  <section id="loginCard" class="card">
+    <h2>تسجيل الدخول</h2>
+    <form id="loginForm">
+      <label for="pw">كلمة المرور <span style="color:var(--ink-soft)">Password</span></label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <div style="margin-top:14px"><button class="btn" type="submit">دخول</button></div>
+    </form>
+    <div id="loginMsg"></div>
+  </section>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+
+    <section class="card">
+      <h2>إضافة عضو جديد · Add member</h2>
+      <form id="addForm">
+        <div class="row">
+          <div>
+            <label for="name">الاسم <span style="color:var(--ink-soft)">Name</span> *</label>
+            <input id="name" type="text" required maxlength="120">
+          </div>
+          <div>
+            <label for="title">المسمّى / الصفة <span style="color:var(--ink-soft)">Title (optional)</span></label>
+            <input id="title" type="text" maxlength="80" placeholder="Member">
+          </div>
+        </div>
+        <label for="photo">الصورة <span style="color:var(--ink-soft)">Photo (optional)</span></label>
+        <input id="photo" type="file" accept="image/*">
+        <div><img id="preview" class="preview hidden" alt="preview"></div>
+        <div style="margin-top:16px">
+          <button id="addBtn" class="btn" type="submit">إضافة العضو</button>
+        </div>
+      </form>
+      <div id="addMsg"></div>
+    </section>
+
+    <section class="card">
+      <h2>الأعضاء الحاليون · Current members</h2>
+      <div id="count" class="count"></div>
+      <ul id="list" class="list"></ul>
+      <div id="listMsg"></div>
+    </section>
+  </div>
+
+  <div class="foot">التغييرات تُحفظ في المستودع وتظهر على الموقع خلال دقيقة تقريبًا بعد إعادة النشر.<br>
+    Changes are saved to the repository and appear on the site about a minute after redeploy.</div>
+</div>
+
+<script>
+(function(){
+  var PW_KEY='esr_admin_pw';
+  var pw='';
+  var $=function(id){return document.getElementById(id);};
+
+  function authHeaders(){return {'Authorization':'Bearer '+pw};}
+  function show(el){el.classList.remove('hidden');}
+  function hide(el){el.classList.add('hidden');}
+  function setMsg(el,text,kind){el.innerHTML=text?'<div class="msg '+(kind||'info')+'">'+text+'</div>':'';}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function initial(name){
+    var titles={'د':1,'بروف':1,'المحامي':1,'المرحوم':1,'مهندس':1,'أ':1,'م':1,'الدكتور':1};
+    var parts=String(name||'').replace(/[.\/]/g,' ').split(/\s+/).filter(function(w){return w&&!titles[w];});
+    return (parts[0]||String(name||'').trim()).charAt(0);
+  }
+
+  // ---- login ----
+  function enterApp(){hide($('loginCard'));show($('app'));show($('logoutBtn'));loadList();}
+  function logout(){pw='';try{sessionStorage.removeItem(PW_KEY);}catch(e){}show($('loginCard'));hide($('app'));hide($('logoutBtn'));$('pw').value='';}
+
+  $('loginForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    pw=$('pw').value;
+    setMsg($('loginMsg'),'جارٍ التحقق… <span class="spin"></span>','info');
+    fetch('/api/members',{headers:authHeaders()}).then(function(r){
+      if(r.status===401){setMsg($('loginMsg'),'كلمة المرور غير صحيحة · Wrong password','err');pw='';return;}
+      if(!r.ok){return r.json().catch(function(){return{};}).then(function(j){
+        setMsg($('loginMsg'),'خطأ في الخادم · '+esc(j.error||('HTTP '+r.status))+(j.missing?(' ('+j.missing.join(', ')+')'):''),'err');pw='';});}
+      try{sessionStorage.setItem(PW_KEY,pw);}catch(e){}
+      setMsg($('loginMsg'),'');enterApp();
+    }).catch(function(){setMsg($('loginMsg'),'تعذّر الاتصال بالخادم · Network error','err');pw='';});
+  });
+  $('logoutBtn').addEventListener('click',logout);
+
+  // ---- list ----
+  function loadList(){
+    setMsg($('listMsg'),'جارٍ التحميل… <span class="spin"></span>','info');
+    fetch('/api/members',{headers:authHeaders(),cache:'no-store'}).then(function(r){
+      if(r.status===401){logout();return null;}
+      return r.ok?r.json():null;
+    }).then(function(data){
+      if(!data){setMsg($('listMsg'),'تعذّر تحميل القائمة','err');return;}
+      setMsg($('listMsg'),'');
+      renderList(data.members||[]);
+    }).catch(function(){setMsg($('listMsg'),'تعذّر تحميل القائمة','err');});
+  }
+
+  function renderList(members){
+    $('count').textContent='العدد: '+members.length;
+    var ul=$('list');ul.innerHTML='';
+    members.forEach(function(m,i){
+      var li=document.createElement('li');li.className='item';
+      var av='<span class="avatar">'+ (m.f? '<img src="/assets/img/'+encodeURIComponent(m.f)+'" alt="" onerror="this.parentNode.textContent=\''+esc(initial(m.n))+'\'">' : esc(initial(m.n))) +'</span>';
+      li.innerHTML=av+
+        '<div class="meta"><b dir="rtl">'+esc(m.n)+'</b><span>'+esc(m.r||'Member')+'</span></div>'+
+        '<button class="btn danger" data-i="'+i+'">حذف</button>';
+      li.querySelector('button').addEventListener('click',function(){delMember(i,m.n);});
+      ul.appendChild(li);
+    });
+  }
+
+  function delMember(index,name){
+    if(!confirm('حذف "'+name+'"؟')) return;
+    setMsg($('listMsg'),'جارٍ الحذف… <span class="spin"></span>','info');
+    fetch('/api/delete-member',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},authHeaders()),
+      body:JSON.stringify({index:index})}).then(function(r){
+      if(r.status===401){logout();return null;}
+      return r.json().catch(function(){return{error:'HTTP '+r.status};});
+    }).then(function(j){
+      if(!j)return;
+      if(j.ok){setMsg($('listMsg'),'تم الحذف · سيظهر التحديث بعد إعادة النشر','ok');loadList();}
+      else setMsg($('listMsg'),'خطأ: '+esc(j.error||'')+(j.detail?(' — '+esc(j.detail)):''),'err');
+    }).catch(function(){setMsg($('listMsg'),'تعذّر الحذف','err');});
+  }
+
+  // ---- add (with client-side image downscale) ----
+  var pending=null; // {base64, ext}
+  $('photo').addEventListener('change',function(){
+    var file=this.files&&this.files[0];pending=null;hide($('preview'));
+    if(!file)return;
+    downscale(file,720,0.85).then(function(res){
+      pending=res;
+      $('preview').src='data:image/jpeg;base64,'+res.base64;show($('preview'));
+    }).catch(function(){setMsg($('addMsg'),'تعذّر قراءة الصورة','err');});
+  });
+
+  function downscale(file,maxDim,quality){
+    return new Promise(function(resolve,reject){
+      var reader=new FileReader();
+      reader.onerror=reject;
+      reader.onload=function(){
+        var img=new Image();
+        img.onerror=reject;
+        img.onload=function(){
+          var w=img.naturalWidth,h=img.naturalHeight;
+          var scale=Math.min(1,maxDim/Math.max(w,h));
+          var cw=Math.round(w*scale),ch=Math.round(h*scale);
+          var c=document.createElement('canvas');c.width=cw;c.height=ch;
+          c.getContext('2d').drawImage(img,0,0,cw,ch);
+          var dataUrl=c.toDataURL('image/jpeg',quality);
+          resolve({base64:dataUrl.replace(/^data:[^;]+;base64,/,''),ext:'jpg'});
+        };
+        img.src=reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  $('addForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    var name=$('name').value.trim();
+    if(!name){setMsg($('addMsg'),'الاسم مطلوب','err');return;}
+    var payload={name:name,title:$('title').value.trim()};
+    if(pending){payload.imageBase64=pending.base64;payload.imageExt=pending.ext;}
+    $('addBtn').disabled=true;
+    setMsg($('addMsg'),'جارٍ الحفظ… <span class="spin"></span>','info');
+    fetch('/api/add-member',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},authHeaders()),
+      body:JSON.stringify(payload)}).then(function(r){
+      if(r.status===401){logout();return null;}
+      return r.json().catch(function(){return{error:'HTTP '+r.status};});
+    }).then(function(j){
+      $('addBtn').disabled=false;
+      if(!j)return;
+      if(j.ok){
+        setMsg($('addMsg'),'تمت الإضافة ✓ سيظهر العضو على الموقع خلال دقيقة تقريبًا.','ok');
+        $('addForm').reset();pending=null;hide($('preview'));loadList();
+      } else {
+        setMsg($('addMsg'),'خطأ: '+esc(j.error||'')+(j.detail?(' — '+esc(j.detail)):''),'err');
+      }
+    }).catch(function(){$('addBtn').disabled=false;setMsg($('addMsg'),'تعذّر الحفظ · Network error','err');});
+  });
+
+  // ---- restore session ----
+  try{var saved=sessionStorage.getItem(PW_KEY);}catch(e){}
+  if(saved){pw=saved;fetch('/api/members',{headers:authHeaders()}).then(function(r){
+    if(r.ok)enterApp();else logout();
+  }).catch(function(){/* stay on login */});}
+})();
+</script>
+</body>
+</html>

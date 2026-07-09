@@ -850,7 +850,7 @@
     return w.charAt(0);
   }
   function personCard(p,isLead){
-    var role=isLead?'<div class="rl">'+p.r+'</div>':'<div class="rl">Member</div>';
+    var role='<div class="rl">'+(isLead?p.r:(p.r||'Member'))+'</div>';
     var src=p.f?(/^(https?:)?\/\//.test(p.f)?p.f:IMG+p.f):'';
     var img=src?'<img src="'+src+'" alt="'+p.n+'" loading="lazy" onerror="this.style.display=\'none\'">':'';
     var fallback='<span class="fallback" style="background:'+avatarColor(p.n)+'">'+avatarInitial(p.n)+'</span>';
@@ -861,7 +861,20 @@
   function renderTeam(){
     var lg=document.getElementById('leadership-grid'), mg=document.getElementById('members-grid');
     if(lg&&!lg.dataset.done){lg.innerHTML=leadership.map(function(p){return personCard(p,true);}).join('');lg.dataset.done=1;}
-    if(mg&&!mg.dataset.done){mg.innerHTML=members.map(function(p){return personCard(p,false);}).join('');mg.dataset.done=1;}
+    if(mg&&!mg.dataset.done){
+      mg.dataset.done=1;
+      // Members are managed via the admin dashboard and stored in members.json.
+      // Fall back to the built-in list if the file can't be loaded.
+      fetch('members.json',{cache:'no-store'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(data){
+          var list=(Array.isArray(data)&&data.length)?data:members;
+          mg.innerHTML=list.map(function(p){return personCard(p,false);}).join('');
+        })
+        .catch(function(){
+          mg.innerHTML=members.map(function(p){return personCard(p,false);}).join('');
+        });
+    }
   }
   renderTeam();
 
